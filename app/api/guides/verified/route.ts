@@ -163,9 +163,9 @@ export async function GET(request: NextRequest) {
     // Try to fetch from database first
     try {
       await dbConnect()
-      
+
       // Fetch verified travel guides from database
-      const dbGuides = await User.find({
+      const dbGuides = await (User as any).find({
         role: 'travel_guide',
         isVerified: true
       }).select('-password').lean()
@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching verified guides:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to fetch verified guides',
         guides: FALLBACK_VERIFIED_GUIDES,
         total: FALLBACK_VERIFIED_GUIDES.length
