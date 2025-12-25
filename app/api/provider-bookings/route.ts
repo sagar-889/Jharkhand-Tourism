@@ -7,21 +7,21 @@ import jwt from 'jsonwebtoken'
 export async function GET(request: NextRequest) {
   try {
     await connectDB()
-    
+
     const { searchParams } = new URL(request.url)
     const providerId = searchParams.get('providerId')
     const type = searchParams.get('type') // 'travel', 'hotel', 'restaurant'
-    
+
     if (!providerId || !type) {
       return NextResponse.json(
         { error: 'Provider ID and type are required' },
         { status: 400 }
       )
     }
-    
+
     // Mock data based on provider type
     let mockBookings = []
-    
+
     if (type === 'travel') {
       mockBookings = [
         {
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         }
       ]
     }
-    
+
     return NextResponse.json(mockBookings)
   } catch (error) {
     console.error('Error fetching provider bookings:', error)
@@ -104,9 +104,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
-    
+
     const bookingData = await request.json()
-    
+
     // In real implementation, save to database and send notifications
     const newBooking = {
       _id: Date.now().toString(),
@@ -114,10 +114,10 @@ export async function POST(request: NextRequest) {
       status: 'pending',
       createdAt: new Date().toISOString()
     }
-    
+
     // Send notification to provider (mock)
     console.log(`New booking notification sent to provider: ${bookingData.providerId}`)
-    
+
     return NextResponse.json(newBooking, { status: 201 })
   } catch (error) {
     console.error('Error creating booking:', error)
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     await connectDB()
-    
+
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -140,30 +140,30 @@ export async function PUT(request: NextRequest) {
         { status: 401 }
       )
     }
-    
+
     const token = authHeader.split(' ')[1]
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any
-    
+
     // Verify user is a provider
-    const user = await User.findById(decoded.userId)
+    const user = await (User as any).findById(decoded.userId)
     if (!user || !['travel_provider', 'hotel_provider', 'restaurant_provider'].includes(user.role)) {
       return NextResponse.json(
         { error: 'Unauthorized - Provider access required' },
         { status: 403 }
       )
     }
-    
+
     const updateData = await request.json()
-    
+
     // In real implementation, update in database and send notifications
     const updatedBooking = {
       ...updateData,
       updatedAt: new Date().toISOString()
     }
-    
+
     // Send notification to customer (mock)
     console.log(`Booking status update notification sent to customer`)
-    
+
     return NextResponse.json(updatedBooking)
   } catch (error) {
     console.error('Error updating booking:', error)
