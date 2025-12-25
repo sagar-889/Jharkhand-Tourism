@@ -1,0 +1,75 @@
+﻿
+> jharkhand-tourism@0.1.0 build
+> next build
+
+   Γû▓ Next.js 14.0.0
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Faile  
+  d to compile.:String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+
+./app/.next/types/app/api/au
+th/login-simple/route.ts
+Module not found: Can't 
+resolve '../../../../../../a
+pp/api/auth/login-simple/rou
+te.js'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+./app/.next/types/app/auth/p
+age.ts
+Module not found: Can't 
+resolve '../../../../app/aut
+h/page.js'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+./app/.next/types/app/layout
+.ts
+Module not found: Can't 
+resolve 
+'../../../app/layout.js'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+./app/.next/types/app/page.t
+s
+Module not found: Can't 
+resolve 
+'../../../app/page.js'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+./app/.next/types/app/welcom
+e/page.ts
+Module not found: Can't 
+resolve '../../../../app/wel
+come/page.js'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+
+> Build failed because of 
+webpack errors

@@ -11,18 +11,23 @@ console.log('Twilio config check:', {
 })
 
 if (!accountSid || !authToken) {
-  console.error('Missing required Twilio credentials')
-  throw new Error('Missing Twilio credentials in environment variables')
+  console.warn('Missing required Twilio credentials - SMS features will not work')
+  // throw new Error('Missing Twilio credentials in environment variables')
 }
 
-const client = twilio(accountSid, authToken)
+const client = (accountSid && authToken)
+  ? twilio(accountSid, authToken)
+  : {
+    verify: { v2: { services: () => ({ verifications: { create: async () => { throw new Error('Twilio not configured') } }, verificationChecks: { create: async () => { throw new Error('Twilio not configured') } } }) } },
+    messages: { create: async () => { throw new Error('Twilio not configured') } }
+  } as any
 
 export const sendOTP = async (mobile: string): Promise<boolean> => {
   if (!serviceSid) {
     console.log('Verify Service SID not configured, skipping Twilio Verify Service')
     return false
   }
-  
+
   try {
     console.log('Attempting to send OTP via Twilio Verify Service to:', mobile)
     const verification = await client.verify.v2
@@ -31,7 +36,7 @@ export const sendOTP = async (mobile: string): Promise<boolean> => {
         to: mobile,
         channel: 'sms'
       })
-    
+
     console.log('Twilio Verify response:', verification.status)
     return verification.status === 'pending'
   } catch (error) {
@@ -48,7 +53,7 @@ export const verifyOTP = async (mobile: string, code: string): Promise<boolean> 
         to: mobile,
         code: code
       })
-    
+
     return verificationCheck.status === 'approved'
   } catch (error) {
     console.error('Error verifying OTP:', error)
@@ -68,7 +73,7 @@ export const sendManualOTP = async (mobile: string, otp: string): Promise<boolea
       from: process.env.TWILIO_PHONE_NUMBER,
       to: mobile
     })
-    
+
     return message.sid ? true : false
   } catch (error) {
     console.error('Error sending manual OTP:', error)
