@@ -1,145 +1,225 @@
 import { NextRequest, NextResponse } from 'next/server'
+import dbConnect from '@/lib/mongodb'
+import User from '@/lib/models/User'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
-// Simple OTP verification without database (for testing)
+// Simple OTP verification with user creation
 export async function POST(request: NextRequest) {
   console.log('Simple Verify OTP API called')
   try {
-    const { mobile, otp, type, userData } = await request.json()
-    console.log('Request data:', { mobile, otp: otp ? '***' : null, type })
+    const body = await request.json()
+    const { email, otp, type, userData } = body
     
-    if (!mobile || !otp) {
-      return NextResponse.json(
-        { error: 'Mobile number and OTP are required' },
-        { status: 400 }
-      )
-    }
-
-    const formattedMobile = mobile.startsWith('+') ? mobile : `+91${mobile}`
+    console.log('Request received:', { 
+      email, 
+      otp: otp ? '***' : null, 
+      type,
+      hasUserData: !!userData 
+    })
     
-    // Check stored OTP (from memory - testing only)
-    const storedOTP = global.testOTP
+    if (!email || !otp) {
+      console.error('Missing required fields:', { email: !!email, otp: !!otp })
+      return NextResponse.json(
+        { error: 'Email and OTP are required' },
+        { status: 400 }
+      )
+    }
+
+    const normalizedEmail = email.toLowerCase().trim()
+    console.log('Normalized email:', normalizedEmail)
+
+    // Check against stored OTP in memory (for testing)
+    let isValidOTP = false
     
-    if (!storedOTP || storedOTP.mobile !== formattedMobile) {
+    if (typeof global !== 'undefined') {
+      const storedData = (global as any).testOTP
+      
+      console.log('Stored OTP data:', storedData ? {
+        email: storedData.email,
+        hasOtp: !!storedData.otp,
+        expiry: new Date(storedData.expiry).toISOString()
+      } : 'No OTP stored')
+      
+      if (storedData) {
+        const isEmailMatch = storedData.email === normalizedEmail
+        const isOtpMatch = storedData.otp === otp
+        const isNotExpired = storedData.expiry > Date.now()
+
+        console.log('Verification check:', {
+          isEmailMatch,
+          isOtpMatch,
+          isNotExpired,
+          storedEmail: storedData.email,
+          providedEmail: normalizedEmail,
+          storedOtp: storedData.otp,
+          providedOtp: otp
+        })
+
+        if (isEmailMatch && isOtpMatch && isNotExpired) {
+          isValidOTP = true
+          // Clear the OTP after successful verification
+          delete (global as any).testOTP
+          console.log('OTP verified successfully')
+        } else if (!isNotExpired) {
+          console.error('OTP expired')
+          return NextResponse.json(
+            { error: 'OTP has expired. Please request a new one.' },
+            { status: 400 }
+          )
+        } else {
+          console.error('OTP mismatch')
+          return NextResponse.json(
+            { error: 'Invalid OTP. Please check and try again.' },
+            { status: 400 }
+          )
+        }
+      } else {
+        console.error('No OTP found in storage')
+        return NextResponse.json(
+          { error: 'No OTP found. Please request a new OTP.' },
+          { status: 400 }
+        )
+      }
+    }
+
+    if (!isValidOTP) {
+      console.error('OTP validation failed')
       return NextResponse.json(
-        { error: 'No OTP found for this mobile number' },
+        { error: 'Invalid OTP. Please check and try again.' },
         { status: 400 }
       )
     }
 
-    if (storedOTP.expiry < Date.now()) {
-      return NextResponse.json(
-        { error: 'OTP has expired' },
-        { status: 400 }
+    // Connect to database
+    console.log('Connecting to database...')
+    await dbConnect()
+    console.log('Database connected')
+
+    if (type === 'signup') {
+      // Create new user
+      if (!userData) {
+        console.error('Missing userData for signup')
+        return NextResponse.json(
+          { error: 'User data is required for signup' },
+          { status: 400 }
+        )
+      }
+
+      console.log('Creating new user with role:', userData.role)
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ email: normalizedEmail })
+      if (existingUser) {
+        console.error('User already exists:', normalizedEmail)
+        return NextResponse.json(
+          { error: 'User with this email already exists' },
+          { status: 400 }
+        )
+      }
+
+      const hashedPassword = await bcrypt.hash(userData.password, 12)
+
+      const newUser = new User({
+        email: normalizedEmail,
+        name: userData.name,
+        password: hashedPassword,
+        role: userData.role,
+        isVerified: true,
+        // Role-specific fields
+        ...(userData.role === 'travel_provider' && {
+          businessName: userData.businessName,
+          businessType: userData.businessType,
+          licenseNumber: userData.licenseNumber,
+          address: userData.address,
+          description: userData.description,
+          services: userData.services
+        }),
+        ...(userData.role === 'hotel_provider' && {
+          hotelName: userData.hotelName,
+          hotelType: userData.hotelType,
+          address: userData.address,
+          description: userData.description,
+          amenities: userData.amenities
+        }),
+        ...(userData.role === 'restaurant_provider' && {
+          restaurantName: userData.restaurantName,
+          cuisineType: userData.cuisineType,
+          address: userData.address,
+          description: userData.description,
+          specialties: userData.specialties
+        })
+      })
+
+      await newUser.save()
+      console.log('User created successfully:', newUser._id)
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: newUser._id, role: newUser.role },
+        process.env.JWT_SECRET || 'fallback-secret',
+        { expiresIn: '7d' }
       )
-    }
 
-    if (storedOTP.otp !== otp) {
-      return NextResponse.json(
-        { error: 'Invalid OTP' },
-        { status: 400 }
+      return NextResponse.json({
+        success: true,
+        message: 'Account created successfully',
+        user: {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+          isVerified: newUser.isVerified
+        },
+        token
+      })
+
+    } else if (type === 'login') {
+      // Login existing user
+      console.log('Logging in user:', normalizedEmail)
+      const user = await User.findOne({ email: normalizedEmail })
+
+      if (!user) {
+        console.error('User not found:', normalizedEmail)
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        )
+      }
+
+      // Mark user as verified if OTP verification successful
+      if (!user.isVerified) {
+        user.isVerified = true
+        await user.save()
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, role: user.role },
+        process.env.JWT_SECRET || 'fallback-secret',
+        { expiresIn: '7d' }
       )
-    }
 
-    // Clear the OTP
-    delete global.testOTP
+      console.log('Login successful for:', normalizedEmail)
 
-    // Create user response with actual form data
-    const testUser = {
-      id: 'user-' + Date.now(),
-      name: userData?.name || 'User',
-      mobile: formattedMobile,
-      email: userData?.email || undefined,
-      role: userData?.role || 'tourist',
-      isVerified: true,
-      // Provider-specific fields
-      ...(userData?.role === 'travel_provider' && {
-        businessName: userData.businessName,
-        businessType: userData.businessType,
-        licenseNumber: userData.licenseNumber,
-        address: userData.address,
-        description: userData.description,
-        services: userData.services
-      }),
-      ...(userData?.role === 'hotel_provider' && {
-        hotelName: userData.hotelName,
-        hotelType: userData.hotelType,
-        address: userData.address,
-        description: userData.description,
-        amenities: userData.amenities
-      }),
-      ...(userData?.role === 'restaurant_provider' && {
-        restaurantName: userData.restaurantName,
-        cuisineType: userData.cuisineType,
-        address: userData.address,
-        description: userData.description,
-        specialties: userData.specialties
+      return NextResponse.json({
+        success: true,
+        message: 'Login successful',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          isVerified: user.isVerified
+        },
+        token
       })
     }
 
-    // Store user data for future login attempts (testing only)
-    if (type === 'signup') {
-      if (!global.signupUsers) {
-        global.signupUsers = []
-      }
-      global.signupUsers.push(testUser)
-      console.log('User stored for future login:', testUser.name)
-    }
-
-    // Initialize test provider accounts if they don't exist
-    if (!global.testProviderAccounts) {
-      global.testProviderAccounts = [
-        {
-          id: 'hotel-provider-1',
-          name: 'Sunita Devi',
-          mobile: '+919876543210',
-          email: 'sunita@greenvalley.com',
-          role: 'hotel_provider',
-          isVerified: true,
-          hotelName: 'Green Valley Resort',
-          hotelType: 'resort',
-          address: 'Netarhat Hill Station, Jharkhand',
-          description: 'Luxury eco-resort with stunning valley views',
-          amenities: 'WiFi, AC, Restaurant, Pool, Spa, Room Service'
-        },
-        {
-          id: 'restaurant-provider-1',
-          name: 'Manoj Singh',
-          mobile: '+919876543211',
-          email: 'manoj@tribalflavors.com',
-          role: 'restaurant_provider',
-          isVerified: true,
-          restaurantName: 'Tribal Flavors Restaurant',
-          cuisineType: ['Indian', 'Tribal', 'North Indian'],
-          address: 'Main Market, Ranchi, Jharkhand',
-          description: 'Authentic tribal cuisine with traditional cooking methods',
-          specialties: ['Bamboo Shoot Curry', 'Tribal Thali', 'Handia']
-        },
-        {
-          id: 'travel-provider-1',
-          name: 'Vikash Kumar',
-          mobile: '+919876543212',
-          email: 'vikash@jhadventures.com',
-          role: 'travel_provider',
-          isVerified: true,
-          businessName: 'Jharkhand Adventures',
-          businessType: 'travel_agency',
-          licenseNumber: 'JH-TA-2024-001',
-          address: 'Tourism Complex, Ranchi, Jharkhand',
-          description: 'Premium travel services for Jharkhand tourism',
-          services: 'Tour Packages, Transportation, Guide Services, Accommodation'
-        }
-      ]
-    }
-
-    // Create a simple token (not secure - for testing only)
-    const testToken = 'test-jwt-token-' + Date.now()
-
-    return NextResponse.json({
-      success: true,
-      message: type === 'login' ? 'Login successful' : 'Account created successfully',
-      user: testUser,
-      token: testToken
-    })
+    return NextResponse.json(
+      { error: 'Invalid request type' },
+      { status: 400 }
+    )
 
   } catch (error) {
     console.error('Verify OTP error:', error)

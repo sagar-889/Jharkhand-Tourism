@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import User, { IUser } from '@/lib/models/User'
-import { sendOTP, generateOTP, sendManualOTP } from '@/lib/twilio'
+import { generateOTP, sendOTPEmail } from '@/lib/mailer'
 
 export async function POST(request: NextRequest) {
   console.log('Send OTP API called')
@@ -9,87 +9,80 @@ export async function POST(request: NextRequest) {
     await dbConnect()
     console.log('Database connected')
 
-    const { mobile, type } = await request.json()
-    console.log('Request data:', { mobile, type })
+    const { email, type } = await request.json()
+    console.log('Request data:', { email, type })
 
-    if (!mobile) {
-      console.log('Mobile number missing')
+    if (!email) {
+      console.log('Email missing')
       return NextResponse.json(
-        { error: 'Mobile number is required' },
+        { error: 'Email is required' },
         { status: 400 }
       )
     }
 
-    // Format mobile number (ensure it starts with country code)
-    const formattedMobile = mobile.startsWith('+') ? mobile : `+91${mobile}`
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      )
+    }
+
+    const normalizedEmail = email.toLowerCase().trim()
 
     if (type === 'signup') {
       // Check if user already exists
-      const existingUser = await (User as any).findOne({ mobile: formattedMobile }) as IUser | null
+      const existingUser = await (User as any).findOne({ email: normalizedEmail }) as IUser | null
       if (existingUser) {
         return NextResponse.json(
-          { error: 'User with this mobile number already exists' },
+          { error: 'User with this email already exists' },
           { status: 400 }
         )
       }
     } else if (type === 'login') {
       // Check if user exists
-      const existingUser = await (User as any).findOne({ mobile: formattedMobile }) as IUser | null
+      const existingUser = await (User as any).findOne({ email: normalizedEmail }) as IUser | null
       if (!existingUser) {
         return NextResponse.json(
-          { error: 'No account found with this mobile number' },
+          { error: 'No account found with this email' },
           { status: 404 }
         )
       }
     }
 
-    // Try to send OTP using Twilio Verify Service first
-    let otpSent = false
+    // Generate OTP
+    const otp = generateOTP()
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
-    try {
-      otpSent = await sendOTP(formattedMobile)
-    } catch (error) {
-      console.log('Twilio Verify Service failed, trying manual OTP...')
+    // Store OTP in database
+    if (type === 'login') {
+      await (User as any).updateOne(
+        { email: normalizedEmail },
+        { otp, otpExpiry }
+      )
+    } else if (type === 'signup') {
+      // For signup, we'll store it temporarily (will be saved with user creation)
+      // We'll pass it back to the client to store temporarily
     }
 
-    // If Twilio Verify Service fails, use manual OTP
-    if (!otpSent) {
-      const otp = generateOTP()
-      const otpExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+    // Send OTP via email
+    const emailSent = await sendOTPEmail(normalizedEmail, otp)
 
-      // Store OTP in database for manual verification
-      if (type === 'login') {
-        await (User as any).updateOne(
-          { mobile: formattedMobile },
-          { otp, otpExpiry }
-        )
-      }
-
-      otpSent = await sendManualOTP(formattedMobile, otp)
-
-      if (otpSent) {
-        return NextResponse.json({
-          success: true,
-          message: 'OTP sent successfully',
-          useManualVerification: true,
-          mobile: formattedMobile
-        })
-      }
-    } else {
-      return NextResponse.json({
-        success: true,
-        message: 'OTP sent successfully',
-        useManualVerification: false,
-        mobile: formattedMobile
-      })
-    }
-
-    if (!otpSent) {
+    if (!emailSent) {
       return NextResponse.json(
-        { error: 'Failed to send OTP. Please try again.' },
+        { error: 'Failed to send OTP email. Please try again.' },
         { status: 500 }
       )
     }
+
+    return NextResponse.json({
+      success: true,
+      message: 'OTP sent to your email successfully',
+      email: normalizedEmail,
+      // For signup, we need to pass OTP back (or store in session/temp storage)
+      ...(type === 'signup' && { tempOtp: otp, tempOtpExpiry: otpExpiry.toISOString() })
+    })
 
   } catch (error) {
     console.error('Send OTP error:', error)

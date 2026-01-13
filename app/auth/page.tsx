@@ -80,8 +80,18 @@ export default function AuthPage() {
   }
 
   const handleSendOTP = async () => {
-    if (!formData.mobile) {
-      setError('Please enter your mobile number')
+    // Use email if available, otherwise use mobile
+    const emailOrMobile = formData.email || formData.mobile
+    
+    if (!emailOrMobile) {
+      setError('Please enter your email address')
+      return
+    }
+
+    // Validate if it's an email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(emailOrMobile)) {
+      setError('Please enter a valid email address')
       return
     }
 
@@ -95,7 +105,7 @@ export default function AuthPage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          mobile: formData.mobile,
+          email: emailOrMobile.toLowerCase().trim(),
           type: isLogin ? 'login' : 'signup'
         })
       })
@@ -128,8 +138,19 @@ export default function AuthPage() {
     setError('')
 
     try {
+      // Use email if available, otherwise use mobile (which should contain email)
+      const emailOrMobile = formData.email || formData.mobile
+      
+      if (!emailOrMobile) {
+        setError('Email is required')
+        setLoading(false)
+        return
+      }
+
+      console.log('Verifying OTP with email:', emailOrMobile)
+      
       const payload: any = {
-        mobile: formData.mobile,
+        email: emailOrMobile.toLowerCase().trim(),
         otp: otp,
         type: isLogin ? 'login' : 'signup'
       }
@@ -138,7 +159,7 @@ export default function AuthPage() {
         const actualRole = selectedRole === 'others' ? selectedSubRole : selectedRole;
         payload.userData = {
           name: formData.name,
-          email: formData.email,
+          email: emailOrMobile.toLowerCase().trim(), // Use the same email
           password: formData.password,
           role: actualRole,
           ...(actualRole === 'travel_provider' && {
@@ -147,24 +168,26 @@ export default function AuthPage() {
             licenseNumber: formData.licenseNumber,
             address: formData.address,
             description: formData.description,
-            services: formData.services.split(',').map(service => service.trim()).filter(service => service)
+            services: formData.services ? formData.services.split(',').map(service => service.trim()).filter(service => service) : []
           }),
           ...(actualRole === 'hotel_provider' && {
             hotelName: formData.hotelName,
             hotelType: formData.hotelType,
             address: formData.address,
             description: formData.description,
-            amenities: formData.amenities.split(',').map(amenity => amenity.trim()).filter(amenity => amenity)
+            amenities: formData.amenities ? formData.amenities.split(',').map(amenity => amenity.trim()).filter(amenity => amenity) : []
           }),
           ...(actualRole === 'restaurant_provider' && {
             restaurantName: formData.restaurantName,
-            cuisineType: formData.cuisineType.split(',').map(cuisine => cuisine.trim()).filter(cuisine => cuisine),
+            cuisineType: formData.cuisineType ? formData.cuisineType.split(',').map(cuisine => cuisine.trim()).filter(cuisine => cuisine) : [],
             address: formData.address,
             description: formData.description,
-            specialties: formData.specialties.split(',').map(specialty => specialty.trim()).filter(specialty => specialty)
+            specialties: formData.specialties ? formData.specialties.split(',').map(specialty => specialty.trim()).filter(specialty => specialty) : []
           })
         }
       }
+
+      console.log('Sending payload:', { ...payload, otp: '***' })
 
       const response = await fetch('/api/auth/verify-otp-simple', {
         method: 'POST',
@@ -537,7 +560,7 @@ export default function AuthPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
             )}
@@ -555,26 +578,26 @@ export default function AuthPage() {
                   onChange={handleInputChange}
                   placeholder="Enter your email or mobile number"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                 />
               </div>
             )}
 
-            {/* Mobile Number for Signup */}
+            {/* Email Address for Signup */}
             {!isLogin && !forgotPasswordMode && !resetPasswordMode && (
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-1">
-                  Mobile Number
+                  Email Address
                 </label>
                 <input
-                  type="tel"
-                  name="mobile"
-                  value={formData.mobile}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="+91 9876543210"
+                  placeholder="your-email@example.com"
                   required
                   disabled={otpStep}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                 />
               </div>
             )}
@@ -582,15 +605,16 @@ export default function AuthPage() {
             {!isLogin && (
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-1">
-                  Email Address (Optional)
+                  Mobile Number (Optional)
                 </label>
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  type="tel"
+                  name="mobile"
+                  value={formData.mobile}
                   onChange={handleInputChange}
+                  placeholder="+91 9876543210"
                   disabled={otpStep}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                 />
               </div>
             )}
@@ -607,10 +631,10 @@ export default function AuthPage() {
                   placeholder="Enter 6-digit OTP"
                   maxLength={6}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest text-gray-900 placeholder-gray-400"
                 />
                 <p className="text-sm text-gray-600 mt-1">
-                  OTP sent to {formData.mobile}
+                  OTP sent to {formData.email || formData.mobile}
                 </p>
                 {resendTimer > 0 ? (
                   <p className="text-sm text-gray-500 mt-1">
@@ -641,7 +665,7 @@ export default function AuthPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                   />
                   <button
                     type="button"
@@ -668,7 +692,7 @@ export default function AuthPage() {
                     onChange={handleInputChange}
                     required
                     disabled={otpStep}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                   />
                   <button
                     type="button"
@@ -695,7 +719,7 @@ export default function AuthPage() {
                     placeholder="Enter 6-digit OTP"
                     maxLength={6}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -709,7 +733,7 @@ export default function AuthPage() {
                     onChange={handleInputChange}
                     required
                     minLength={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -723,7 +747,7 @@ export default function AuthPage() {
                     onChange={handleInputChange}
                     required
                     minLength={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                   />
                 </div>
               </>
@@ -745,7 +769,7 @@ export default function AuthPage() {
                     required
                     disabled={otpStep}
                     placeholder="Complete business address"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -760,7 +784,7 @@ export default function AuthPage() {
                     disabled={otpStep}
                     placeholder="Describe your business and services"
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                   />
                 </div>
 
@@ -778,7 +802,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         required
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                     <div>
@@ -791,7 +815,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         required
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900"
                       >
                         <option value="">Select business type</option>
                         <option value="travel_agency">Travel Agency</option>
@@ -823,7 +847,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         placeholder="Tour packages, Transportation, Guide services"
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                   </>
@@ -843,7 +867,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         required
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                     <div>
@@ -856,7 +880,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         required
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900"
                       >
                         <option value="">Select hotel type</option>
                         <option value="hotel">Hotel</option>
@@ -876,7 +900,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         placeholder="WiFi, AC, Restaurant, Pool, Spa"
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                   </>
@@ -896,7 +920,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         required
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                     <div>
@@ -910,7 +934,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         placeholder="Indian, Chinese, Continental, Local"
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                     <div>
@@ -924,7 +948,7 @@ export default function AuthPage() {
                         onChange={handleInputChange}
                         placeholder="Tribal cuisine, Vegetarian, Seafood"
                         disabled={otpStep}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
                       />
                     </div>
                   </>

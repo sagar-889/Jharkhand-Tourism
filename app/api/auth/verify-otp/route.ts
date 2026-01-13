@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import User, { IUser } from '@/lib/models/User'
-import { verifyOTP } from '@/lib/twilio'
+import { sendWelcomeEmail } from '@/lib/mailer'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -11,37 +11,38 @@ export async function POST(request: NextRequest) {
     await dbConnect()
     console.log('Database connected')
 
-    const { mobile, otp, type, userData } = await request.json()
-    console.log('Request data:', { mobile, otp: otp ? '***' : null, type })
+    const { email, otp, type, userData, tempOtp, tempOtpExpiry } = await request.json()
+    console.log('Request data:', { email, otp: otp ? '***' : null, type })
 
-    if (!mobile || !otp) {
-      console.log('Missing mobile or OTP')
+    if (!email || !otp) {
+      console.log('Missing email or OTP')
       return NextResponse.json(
-        { error: 'Mobile number and OTP are required' },
+        { error: 'Email and OTP are required' },
         { status: 400 }
       )
     }
 
-    const formattedMobile = mobile.startsWith('+') ? mobile : `+91${mobile}`
+    const normalizedEmail = email.toLowerCase().trim()
     let isValidOTP = false
 
-    // Try Twilio Verify Service first
-    try {
-      isValidOTP = await verifyOTP(formattedMobile, otp)
-    } catch (error) {
-      console.log('Twilio Verify Service failed, trying manual verification...')
-    }
-
-    // If Twilio Verify Service fails, check manual OTP
-    if (!isValidOTP && type === 'login') {
-      const user = await (User as any).findOne({ mobile: formattedMobile }) as IUser | null
+    // Verify OTP based on type
+    if (type === 'login') {
+      const user = await (User as any).findOne({ email: normalizedEmail }) as IUser | null
       if (user && user.otp === otp && user.otpExpiry && user.otpExpiry > new Date()) {
         isValidOTP = true
         // Clear OTP after successful verification
         await (User as any).updateOne(
-          { mobile: formattedMobile },
+          { email: normalizedEmail },
           { $unset: { otp: 1, otpExpiry: 1 } }
         )
+      }
+    } else if (type === 'signup') {
+      // For signup, verify against the temporary OTP sent from send-otp
+      if (tempOtp && tempOtpExpiry) {
+        const expiryDate = new Date(tempOtpExpiry)
+        if (otp === tempOtp && expiryDate > new Date()) {
+          isValidOTP = true
+        }
       }
     }
 
@@ -64,8 +65,8 @@ export async function POST(request: NextRequest) {
       const hashedPassword = await bcrypt.hash(userData.password, 12)
 
       const newUser = new (User as any)({
-        mobile: formattedMobile,
-        email: userData.email || undefined,
+        email: normalizedEmail,
+        mobile: userData.mobile || undefined,
         name: userData.name,
         password: hashedPassword,
         role: userData.role,
@@ -80,6 +81,9 @@ export async function POST(request: NextRequest) {
       })
 
       await newUser.save()
+
+      // Send welcome email
+      await sendWelcomeEmail(normalizedEmail, userData.name)
 
       // Generate JWT token
       const token = jwt.sign(
@@ -104,7 +108,7 @@ export async function POST(request: NextRequest) {
 
     } else if (type === 'login') {
       // Login existing user
-      const user = await (User as any).findOne({ mobile: formattedMobile }) as IUser | null
+      const user = await (User as any).findOne({ email: normalizedEmail }) as IUser | null
 
       if (!user) {
         return NextResponse.json(

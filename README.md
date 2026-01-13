@@ -49,6 +49,7 @@ A comprehensive tourism platform for Jharkhand with multi-role authentication an
 - Node.js (v16 or higher)
 - MongoDB (local or cloud instance)
 - Git
+- Email account (Gmail recommended for OTP)
 
 ### 1. Clone and Install
 ```bash
@@ -64,9 +65,24 @@ MONGODB_URI=mongodb://localhost:27017/jharkhand-tourism
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 NEXTAUTH_SECRET=your-nextauth-secret-key
 NEXTAUTH_URL=http://localhost:3000
+
+# Email OTP Configuration (Required)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-gmail-app-password
 ```
 
-### 3. Database Setup
+**Setting up Gmail for OTP:**
+1. Enable 2-Factor Authentication on your Google account
+2. Create App Password: https://myaccount.google.com/apppasswords
+3. Use the 16-character password in EMAIL_PASSWORD
+4. See `EMAIL_SETUP_GUIDE.md` for detailed instructions
+
+### 3. Test Email Configuration
+```bash
+npm run test-email
+```
+
+### 4. Database Setup
 Make sure MongoDB is running, then initialize the database with default users:
 ```bash
 npm run init-db
@@ -86,12 +102,28 @@ This will create default admin and government accounts with the following creden
 - **Password**: `Gov@2024`
 - **Role**: Government (access to analytics dashboard)
 
-### 4. Start the Development Server
+### 5. Start the Development Server
 ```bash
 npm run dev
 ```
 
 Visit `http://localhost:3000` to access the application.
+
+## 📧 Email OTP System
+
+The application uses **Email OTP** for user authentication instead of SMS. This provides:
+- ✅ Cost-effective verification (no SMS charges)
+- ✅ Global reach without country codes
+- ✅ Professional branded emails
+- ✅ Welcome emails for new users
+
+**Quick Setup:**
+1. Configure Gmail App Password (see `EMAIL_SETUP_GUIDE.md`)
+2. Add credentials to `.env` file
+3. Test with `npm run test-email`
+4. Start using email-based authentication
+
+For detailed setup instructions, see `EMAIL_SETUP_GUIDE.md`
 
 ## 📱 How to Use
 
@@ -155,13 +187,16 @@ Connect using the URI: `mongodb://localhost:27017/jharkhand-tourism`
 - **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes
 - **Database**: MongoDB with Mongoose
-- **Authentication**: JWT tokens, bcryptjs
+- **Authentication**: JWT tokens, bcryptjs, Email OTP (Nodemailer)
 - **UI Components**: Lucide React icons, Headless UI
 - **Styling**: Tailwind CSS with custom design system
+- **Email**: Nodemailer for OTP and notifications
+- **Payments**: Stripe (configured)
 
 ## 📊 Key Features Implemented
 
 ✅ Multi-role authentication system
+✅ Email OTP verification (Nodemailer)
 ✅ Role-based access control
 ✅ Tourist dashboard with travel browsing
 ✅ Travel guide management system
@@ -169,28 +204,32 @@ Connect using the URI: `mongodb://localhost:27017/jharkhand-tourism`
 ✅ Government analytics dashboard
 ✅ Database schema for all entities
 ✅ Responsive design
+✅ Professional email templates
+✅ Welcome emails for new users
 ✅ Certificate upload system (UI ready)
 ✅ Vehicle and driver management
 ✅ Statistical reporting
 
 ## 🔄 Next Steps for Enhancement
 
-- File upload functionality for certificates
-- Payment integration for bookings
+- Payment integration for bookings (Stripe configured)
 - Real-time notifications
-- Email verification system
 - Advanced search and filtering
 - Mobile app development
 - API documentation
 - Automated testing
+- Rate limiting for OTP requests
+- Production email service integration
 
 ## 🆘 Support
 
 If you encounter any issues:
 1. Check that MongoDB is running
 2. Verify environment variables are set correctly
-3. Ensure all dependencies are installed
-4. Check the console for error messages
+3. Test email configuration with `npm run test-email`
+4. Ensure all dependencies are installed
+5. Check the console for error messages
+6. Review `EMAIL_SETUP_GUIDE.md` for email setup help
 
 For additional help, refer to the code comments or create an issue in the repository.
 

@@ -49,18 +49,16 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'picsum.photos',
-      }
-      ,
+      },
       {
         protocol: 'https',
         hostname: 'source.unsplash.com',
       }
-      ,
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      }
     ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: false,
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY || 'default-value',
