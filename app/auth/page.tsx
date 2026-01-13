@@ -10,6 +10,7 @@ export default function AuthPage() {
   const [selectedRole, setSelectedRole] = useState<'tourist' | 'others'>('tourist')
   const [selectedSubRole, setSelectedSubRole] = useState<'travel_provider' | 'hotel_provider' | 'restaurant_provider'>('travel_provider')
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [otpStep, setOtpStep] = useState(false)
@@ -75,6 +76,26 @@ export default function AuthPage() {
     }
   }
 
+  // Password strength validation
+  const validatePassword = (password: string): { isValid: boolean; message: string } => {
+    if (password.length < 8) {
+      return { isValid: false, message: 'Password must be at least 8 characters long' }
+    }
+    if (!/[A-Z]/.test(password)) {
+      return { isValid: false, message: 'Password must contain at least one uppercase letter' }
+    }
+    if (!/[a-z]/.test(password)) {
+      return { isValid: false, message: 'Password must contain at least one lowercase letter' }
+    }
+    if (!/[0-9]/.test(password)) {
+      return { isValid: false, message: 'Password must contain at least one number' }
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return { isValid: false, message: 'Password must contain at least one special character (!@#$%^&*...)' }
+    }
+    return { isValid: true, message: 'Strong password' }
+  }
+
   const handleSendOTP = async () => {
     if (!formData.email) {
       setError('Please enter your email address')
@@ -85,9 +106,48 @@ export default function AuthPage() {
       setError('Please enter a valid email address')
       return
     }
-    if (!isLogin && (!formData.mobile || formData.mobile.length !== 10)) {
-      setError(!formData.mobile ? 'Please enter your mobile number' : 'Mobile number must be exactly 10 digits')
-      return
+    
+    // Validate mobile for signup
+    if (!isLogin) {
+      if (!formData.mobile || formData.mobile.length !== 10) {
+        setError(!formData.mobile ? 'Please enter your mobile number' : 'Mobile number must be exactly 10 digits')
+        return
+      }
+
+      // Validate password strength
+      const passwordValidation = validatePassword(formData.password)
+      if (!passwordValidation.isValid) {
+        setError(passwordValidation.message)
+        return
+      }
+
+      // Check if passwords match
+      if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match')
+        return
+      }
+
+      // Check if user already exists
+      try {
+        const checkResponse = await fetch('/api/auth/check-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email.toLowerCase().trim(),
+            mobile: `+91${formData.mobile}`
+          })
+        })
+
+        const checkData = await checkResponse.json()
+        
+        if (checkData.exists) {
+          setError(checkData.message || 'User already exists with this email or mobile number')
+          return
+        }
+      } catch (err: any) {
+        console.error('Error checking user:', err)
+        // Continue with OTP sending even if check fails
+      }
     }
 
     setLoading(true)
@@ -681,32 +741,62 @@ export default function AuthPage() {
 
               {/* Password for Signup */}
               {!isLogin && !forgotPasswordMode && !resetPasswordMode && (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                      disabled={otpStep}
-                      placeholder="Create a strong password"
-                      className="w-full pl-12 pr-12 py-3 bg-white/50 dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        required
+                        disabled={otpStep}
+                        placeholder="Create a strong password"
+                        className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 placeholder-gray-400"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Must be 8+ characters with uppercase, lowercase, number, and special character
+                    </p>
                   </div>
-                </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        required
+                        disabled={otpStep}
+                        placeholder="Re-enter your password"
+                        className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 placeholder-gray-400"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Reset Password Fields */}
