@@ -1,8 +1,8 @@
 import mongoose, { Document } from 'mongoose'
 
 export interface IUser extends Document {
-  email?: string
-  mobile: string
+  email: string
+  mobile?: string
   password: string
   name: string
   role: 'tourist' | 'travel_guide' | 'admin' | 'government' | 'travel_provider' | 'hotel_provider' | 'restaurant_provider'
@@ -113,12 +113,12 @@ export interface IRestaurantProvider extends IUser {
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
+    required: true,
+    unique: true,
     lowercase: true
   },
   mobile: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   password: {
     type: String,

@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       console.log('Creating new user with role:', userData.role)
 
       // Check if user already exists
-      const existingUser = await User.findOne({ email: normalizedEmail })
+      const existingUser = await User.findOne({ email: normalizedEmail }).exec()
       if (existingUser) {
         console.error('User already exists:', normalizedEmail)
         return NextResponse.json(
