@@ -7,7 +7,7 @@ import {
   MapPin, Plus, Car, Users, FileText, CheckCircle, XCircle, 
   Clock, Star, LogOut, User, Upload, Edit, Trash2, Eye, Bell
 } from 'lucide-react'
-import ChatBot from '../../components/ChatBot'
+import Chatbot from '../../components/Chatbot'
 
 interface Travel {
   _id: string
@@ -670,7 +670,7 @@ export default function TravelGuideDashboard() {
           </div>
         </div>
       )}
-      <ChatBot />
+      <Chatbot />
     </div>
   )
 }

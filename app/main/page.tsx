@@ -7,7 +7,7 @@ import Hero from '../components/Hero'
 import FeaturedPlaces from '../components/FeaturedPlaces'
 import Features from '../components/Features'
 import Footer from '../components/Footer'
-import ChatBot from '../components/ChatBot'
+import Chatbot from '../components/Chatbot'
 import LocationServicesButton from '../components/LocationServicesButton'
 
 export default function MainPage() {
@@ -67,7 +67,7 @@ export default function MainPage() {
       <FeaturedPlaces />
       <Features />
       <Footer />
-      <ChatBot />
+      <Chatbot />
       <LocationServicesButton />
     </main>
   )
