@@ -7,7 +7,7 @@ import {
   CheckCircle, ArrowRight, Globe, Camera, Car, Hotel
 } from 'lucide-react'
 import BackgroundSlider from '../components/BackgroundSlider'
-import Chatbot from '../components/Chatbot'
+import Chatbot from '../components/ChatBot'
 
 export default function WelcomePage() {
   const [activeFeature, setActiveFeature] = useState(0)
