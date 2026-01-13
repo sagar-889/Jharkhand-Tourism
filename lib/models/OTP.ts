@@ -1,6 +1,14 @@
-import mongoose from 'mongoose'
+import mongoose, { Document, Model } from 'mongoose'
 
-const OTPSchema = new mongoose.Schema({
+interface IOTP extends Document {
+  email: string
+  otp: string
+  type: 'signup' | 'login'
+  expiresAt: Date
+  createdAt: Date
+}
+
+const OTPSchema = new mongoose.Schema<IOTP>({
   email: {
     type: String,
     required: true,
@@ -30,4 +38,6 @@ const OTPSchema = new mongoose.Schema({
 // Auto-delete expired OTPs
 OTPSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 
-export default mongoose.models.OTP || mongoose.model('OTP', OTPSchema)
+const OTP: Model<IOTP> = mongoose.models.OTP || mongoose.model<IOTP>('OTP', OTPSchema)
+
+export default OTP
