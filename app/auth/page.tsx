@@ -433,34 +433,39 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo */}
-        <div className="text-center mb-6">
-          <Link href="/" className="inline-flex items-center space-x-2">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <MapPin className="h-6 w-6 text-white" />
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center justify-center space-x-3 group">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+              <MapPin className="h-7 w-7 text-white" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Jharkhand Tourism</h1>
-              <p className="text-sm text-gray-800">Explore the Heart of India</p>
+            <div className="text-left">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Jharkhand Tourism
+              </h1>
+              <p className="text-sm text-gray-600 font-medium">Explore the Heart of India</p>
             </div>
           </Link>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 backdrop-blur-sm">
           {/* Toggle Login/Signup */}
           {!forgotPasswordMode && !resetPasswordMode && (
-            <div className="flex bg-gray-100 rounded-md p-1 mb-4">
+            <div className="flex bg-gradient-to-r from-gray-100 to-gray-50 rounded-xl p-1.5 mb-6 shadow-inner">
               <button
                 onClick={() => {
                   setIsLogin(true)
                   setOtpStep(false)
                   setError('')
                 }}
-                className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${isLogin ? 'bg-white text-blue-800 shadow-sm' : 'text-gray-800'
-                  }`}
+                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                  isLogin 
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md transform scale-105' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
               >
                 Login
               </button>
@@ -470,8 +475,11 @@ export default function AuthPage() {
                   setOtpStep(false)
                   setError('')
                 }}
-                className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${!isLogin ? 'bg-white text-blue-800 shadow-sm' : 'text-gray-800'
-                  }`}
+                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                  !isLogin 
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md transform scale-105' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
               >
                 Sign Up
               </button>
@@ -480,41 +488,48 @@ export default function AuthPage() {
 
           {/* Forgot Password Header */}
           {forgotPasswordMode && (
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Forgot Password</h3>
-              <p className="text-sm text-gray-800">Enter your email or mobile number to reset your password</p>
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                Forgot Password
+              </h3>
+              <p className="text-sm text-gray-600">Enter your email or mobile number to reset your password</p>
             </div>
           )}
 
           {/* Reset Password Header */}
           {resetPasswordMode && (
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Reset Password</h3>
-              <p className="text-sm text-gray-800">Enter the OTP sent to your mobile and your new password</p>
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                Reset Password
+              </h3>
+              <p className="text-sm text-gray-600">Enter the OTP sent to your mobile and your new password</p>
             </div>
           )}
 
           {/* Role Selection (only for signup) */}
           {!isLogin && (
-            <div className="mb-4">
-              <label className="block text-sm font-bold text-gray-900 mb-2">
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Choose your role
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 {Object.entries(roleIcons).map(([role, Icon]) => (
                   <button
                     key={role}
                     type="button"
                     onClick={() => setSelectedRole(role as any)}
-                    className={`p-3 rounded-md border transition-all ${selectedRole === role
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                    className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                      selectedRole === role
+                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-md transform scale-105'
+                        : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                    }`}
                   >
-                    <Icon className={`h-6 w-6 mx-auto mb-2 ${selectedRole === role ? 'text-blue-600' : 'text-gray-600'
-                      }`} />
-                    <div className={`text-sm font-bold capitalize ${selectedRole === role ? 'text-blue-800' : 'text-gray-800'
-                      }`}>
+                    <Icon className={`h-7 w-7 mx-auto mb-2 transition-colors ${
+                      selectedRole === role ? 'text-blue-600' : 'text-gray-500'
+                    }`} />
+                    <div className={`text-sm font-semibold capitalize ${
+                      selectedRole === role ? 'text-blue-700' : 'text-gray-700'
+                    }`}>
                       {role.replace('_', ' ')}
                     </div>
                   </button>
@@ -525,22 +540,27 @@ export default function AuthPage() {
 
           {/* Sub-role Selection (only when "others" is selected) */}
           {!isLogin && selectedRole === 'others' && (
-            <div className="mb-4">
-              <label className="block text-sm font-bold text-gray-900 mb-2">
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Choose your service type
               </label>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-3">
                 {Object.entries(subRoleOptions).map(([subRole, label]) => (
                   <button
                     key={subRole}
                     type="button"
                     onClick={() => setSelectedSubRole(subRole as any)}
-                    className={`p-3 rounded-md border transition-all text-left ${selectedSubRole === subRole
-                        ? 'border-blue-500 bg-blue-50 text-blue-900'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-800'
-                      }`}
+                    className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                      selectedSubRole === subRole
+                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md transform scale-102'
+                        : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                    }`}
                   >
-                    <div className="text-sm font-bold">{label}</div>
+                    <div className={`text-sm font-semibold ${
+                      selectedSubRole === subRole ? 'text-blue-700' : 'text-gray-700'
+                    }`}>
+                      {label}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -548,10 +568,10 @@ export default function AuthPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Full Name
                 </label>
                 <input
@@ -560,7 +580,8 @@ export default function AuthPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400"
+                  placeholder="Enter your full name"
                 />
               </div>
             )}
@@ -568,7 +589,7 @@ export default function AuthPage() {
             {/* Email/Mobile Input for Login and Forgot Password */}
             {(isLogin || forgotPasswordMode) && (
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Email or Mobile Number
                 </label>
                 <input
@@ -578,7 +599,7 @@ export default function AuthPage() {
                   onChange={handleInputChange}
                   placeholder="Enter your email or mobile number"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400"
                 />
               </div>
             )}
@@ -586,7 +607,7 @@ export default function AuthPage() {
             {/* Email Address for Signup */}
             {!isLogin && !forgotPasswordMode && !resetPasswordMode && (
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Email Address
                 </label>
                 <input
@@ -597,7 +618,7 @@ export default function AuthPage() {
                   placeholder="your-email@example.com"
                   required
                   disabled={otpStep}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 placeholder-gray-400"
                 />
               </div>
             )}
@@ -621,7 +642,7 @@ export default function AuthPage() {
 
             {otpStep && (
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Enter OTP
                 </label>
                 <input
@@ -631,20 +652,20 @@ export default function AuthPage() {
                   placeholder="Enter 6-digit OTP"
                   maxLength={6}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-center text-2xl tracking-widest font-semibold text-gray-900 placeholder-gray-400"
                 />
-                <p className="text-sm text-gray-600 mt-1">
-                  OTP sent to {formData.email || formData.mobile}
+                <p className="text-sm text-gray-600 mt-2 text-center">
+                  OTP sent to <span className="font-semibold text-blue-600">{formData.email || formData.mobile}</span>
                 </p>
                 {resendTimer > 0 ? (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Resend OTP in {resendTimer}s
+                  <p className="text-sm text-gray-500 mt-2 text-center">
+                    Resend OTP in <span className="font-semibold text-blue-600">{resendTimer}s</span>
                   </p>
                 ) : (
                   <button
                     type="button"
                     onClick={handleSendOTP}
-                    className="text-sm text-blue-600 hover:text-blue-700 mt-1"
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium mt-2 block mx-auto hover:underline"
                   >
                     Resend OTP
                   </button>
@@ -655,7 +676,7 @@ export default function AuthPage() {
             {/* Password for Login */}
             {isLogin && !forgotPasswordMode && !resetPasswordMode && (
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -665,14 +686,15 @@ export default function AuthPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                    placeholder="Enter your password"
+                    className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                    className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
@@ -681,7 +703,7 @@ export default function AuthPage() {
             {/* Password for Signup */}
             {!isLogin && !forgotPasswordMode && !resetPasswordMode && (
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -692,14 +714,15 @@ export default function AuthPage() {
                     onChange={handleInputChange}
                     required
                     disabled={otpStep}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 text-gray-900 placeholder-gray-400"
+                    placeholder="Create a strong password"
+                    className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 placeholder-gray-400"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                    className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
@@ -958,17 +981,25 @@ export default function AuthPage() {
 
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-xl p-4 animate-shake">
+                <p className="text-sm text-red-700 font-medium">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              {loading ? 'Please wait...' : (
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Please wait...
+                </span>
+              ) : (
                 forgotPasswordMode ? 'Send Reset OTP' :
                   resetPasswordMode ? 'Reset Password' :
                     otpStep ? 'Verify OTP' :
@@ -985,7 +1016,7 @@ export default function AuthPage() {
                     setForgotPasswordMode(true)
                     setError('')
                   }}
-                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors hover:underline"
                 >
                   Forgot your password?
                 </button>
@@ -1003,10 +1034,9 @@ export default function AuthPage() {
                     setOtp('')
                     setError('')
                   }}
+                  className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors inline-flex items-center gap-1 hover:gap-2"
                 >
-                  <span className="text-sm text-gray-800 hover:text-blue-800 transition-colors">
-                    ← Back to Login
-                  </span>
+                  <span>←</span> Back to Login
                 </button>
               </div>
             )}
@@ -1016,9 +1046,9 @@ export default function AuthPage() {
           <div className="mt-6 text-center">
             <Link
               href="/"
-              className="text-sm text-gray-800 hover:text-blue-800 transition-colors"
+              className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors inline-flex items-center gap-1 hover:gap-2"
             >
-              ← Back to Home
+              <span>←</span> Back to Home
             </Link>
           </div>
         </div>
