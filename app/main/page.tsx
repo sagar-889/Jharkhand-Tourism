@@ -7,7 +7,7 @@ import Hero from '../components/Hero'
 import FeaturedPlaces from '../components/FeaturedPlaces'
 import Features from '../components/Features'
 import Footer from '../components/Footer'
-import Chatbot from '../components/Chatbot'
+import Chatbot from '../components/ChatBot'
 import LocationServicesButton from '../components/LocationServicesButton'
 
 export default function MainPage() {

@@ -7,7 +7,7 @@ import {
   MapPin, Plus, Car, Users, FileText, CheckCircle, XCircle, 
   Clock, Star, LogOut, User, Upload, Edit, Trash2, Eye, Bell
 } from 'lucide-react'
-import Chatbot from '../../components/Chatbot'
+import Chatbot from '../../components/ChatBot'
 
 interface Travel {
   _id: string
