@@ -11,6 +11,7 @@
     "init-db": "node scripts/init-default-users.js",
     "check-setup": "node scripts/check-setup.js",
     "test-email": "node scripts/test-email.js",
+    "test-backend": "node scripts/test-backend.js",
     "setup-uploads": "node scripts/setup-uploads.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
