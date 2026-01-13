@@ -105,9 +105,9 @@ export default function TouristDashboard() {
           maxGroupSize: 15,
           price: 12000,
           images: [
-            'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400',
-            'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400',
-            'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400'
+            '/images/tourist-1.jpg',
+            '/images/tourist-1.jpg',
+            '/images/tourist-2.jpg'
           ],
           difficulty: 'easy',
           category: ['Cultural', 'Heritage'],
@@ -135,9 +135,9 @@ export default function TouristDashboard() {
           maxGroupSize: 10,
           price: 8000,
           images: [
-            'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400',
-            'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400',
-            'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400'
+            '/images/tourist-3.jpg',
+            '/images/tourist-4.jpg',
+            '/images/tourist-5.jpg'
           ],
           difficulty: 'challenging',
           category: ['Adventure', 'Trekking'],

@@ -1,0 +1,47 @@
+{
+  "hotels": {
+    "photo-1542314831-068cd1dbfeeb": "/images/hotel-1.jpg",
+    "photo-1566073771259-6a8506099945": "/images/hotel-2.jpg",
+    "photo-1551776235-dde6d4829808": "/images/hotel-2.jpg",
+    "photo-1554995207-c18c203602cb": "/images/hotel-3.jpg",
+    "photo-1541534401786-2077eed87a74": "/images/hotel-4.jpg",
+    "photo-1501117716987-c8e0041a3eb1": "/images/hotel-1.jpg",
+    "photo-1540541338287-41700207dee6": "/images/hotel-2.jpg",
+    "photo-1505691938895-1758d7feb511": "/images/hotel-3.jpg",
+    "photo-1445019980597-93fa8acb246c": "/images/hotel-4.jpg",
+    "photo-1540189549336-e6e99c3679fe": "/images/hotel-1.jpg",
+    "photo-1519710164239-da123dc03ef4": "/images/hotel-2.jpg",
+    "photo-1519822472237-3c8b1b626c86": "/images/hotel-3.jpg",
+    "photo-1496412705862-e0088f16f791": "/images/hotel-4.jpg"
+  },
+  "restaurants": {
+    "photo-1559339352-11d035aa65de": "/images/restaurant-1.jpg",
+    "photo-1544145945-f90425340c7e": "/images/restaurant-2.jpg",
+    "photo-1604908554028-57f8f4e0f0d5": "/images/restaurant-3.jpg",
+    "photo-1604908553985-3b48e9cf9f27": "/images/restaurant-4.jpg",
+    "photo-1544025162-d76694265947": "/images/restaurant-5.jpg",
+    "photo-1517248135467-4c7edcad34c4": "/images/restaurant-6.jpg",
+    "photo-1528605248644-14dd04022da1": "/images/restaurant-7.jpg",
+    "photo-1625944526315-4d0c03f2bb27": "/images/restaurant-8.jpg",
+    "photo-1550547660-d9450f859349": "/images/restaurant-1.jpg",
+    "photo-1604908177073-df0b2e6900b8": "/images/restaurant-2.jpg",
+    "photo-1563245372-f21724e3856b": "/images/restaurant-3.jpg",
+    "photo-1601050690597-9fd4b29f4101": "/images/restaurant-4.jpg",
+    "photo-1512058564366-18510be2db19": "/images/restaurant-5.jpg",
+    "photo-1511920170033-f8396924c348": "/images/restaurant-6.jpg",
+    "photo-1481833761820-0509d3217039": "/images/restaurant-7.jpg",
+    "photo-1495474472287-4d71bcdd2085": "/images/cafe-1.jpg",
+    "photo-1524704796725-9fc3044a58e9": "/images/cafe-2.jpg",
+    "photo-1498804103079-a6351b050096": "/images/cafe-1.jpg",
+    "photo-1499636136210-6f4ee915583e": "/images/cafe-2.jpg"
+  },
+  "tourist": {
+    "photo-1518709268805-4e9042af2176": "/images/tourist-1.jpg",
+    "photo-1582510003544-4d00b7f74220": "/images/tourist-1.jpg",
+    "photo-1533174072545-7a4b6ad7a6c3": "/images/tourist-2.jpg",
+    "photo-1571068316344-75bc76f77890": "/images/tourist-3.jpg",
+    "photo-1544551763-46a013bb70d5": "/images/tourist-4.jpg",
+    "photo-1439066615861-d1af74d74000": "/images/tourist-5.jpg"
+  },
+  "fallback": "/images/placeholder.jpg"
+}

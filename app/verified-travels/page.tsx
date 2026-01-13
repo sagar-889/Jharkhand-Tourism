@@ -128,9 +128,9 @@ export default function VerifiedTravelsPage() {
           maxGroupSize: 15,
           price: 12000,
           images: [
-            'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800',
-            'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=800',
-            'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800'
+            '/images/tourist-1.jpg',
+            '/images/tourist-1.jpg',
+            '/images/tourist-2.jpg'
           ],
           difficulty: 'easy',
           category: ['Cultural', 'Heritage', 'Traditional'],
@@ -188,9 +188,9 @@ export default function VerifiedTravelsPage() {
           maxGroupSize: 20,
           price: 9000,
           images: [
-            'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=800',
-            'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800',
-            'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800'
+            '/images/tourist-1.jpg',
+            '/images/general-2.jpg',
+            '/images/tourist-1.jpg'
           ],
           difficulty: 'easy',
           category: ['Spiritual', 'Religious', 'Cultural'],

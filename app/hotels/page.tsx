@@ -25,13 +25,13 @@ export default function HotelsPage() {
       id: 1,
       name: 'Radisson Blu Hotel Ranchi',
       location: 'Ranchi',
-      image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800',
+      image: '/images/hotel-1.jpg',
       images: [
-        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-        'https://images.unsplash.com/photo-1551776235-dde6d4829808?w=800',
-        'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800',
-        'https://images.unsplash.com/photo-1541534401786-2077eed87a74?w=800',
-        'https://images.unsplash.com/photo-1501117716987-c8e0041a3eb1?w=800'
+        '/images/hotel-2.jpg',
+        '/images/hotel-2.jpg',
+        '/images/hotel-3.jpg',
+        '/images/hotel-4.jpg',
+        '/images/hotel-1.jpg'
       ],
       rating: 4.5,
       reviews: 1234,
@@ -44,13 +44,13 @@ export default function HotelsPage() {
       id: 2,
       name: 'Hotel Yuvraj Palace',
       location: 'Ranchi',
-      image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800',
+      image: '/images/hotel-2.jpg',
       images: [
-        'https://images.unsplash.com/photo-1551776235-dde6d4829808?w=800',
-        'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800',
-        'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800',
-        'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800',
-        'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800'
+        '/images/hotel-2.jpg',
+        '/images/hotel-3.jpg',
+        '/images/hotel-4.jpg',
+        '/images/hotel-1.jpg',
+        '/images/hotel-2.jpg'
       ],
       rating: 4.2,
       reviews: 856,
@@ -63,13 +63,13 @@ export default function HotelsPage() {
       id: 3,
       name: 'Forest Rest House Betla',
       location: 'Betla National Park',
-      image: 'https://source.unsplash.com/featured/800x600/?forest%20lodge%20India',
+      image: '/images/general-1.jpg',
       images: [
-        'https://source.unsplash.com/featured/800x600/?forest%20resort',
-        'https://source.unsplash.com/featured/800x600/?jungle%20lodge',
-        'https://source.unsplash.com/featured/800x600/?wildlife%20India',
-        'https://source.unsplash.com/featured/800x600/?eco%20room',
-        'https://source.unsplash.com/featured/800x600/?nature%20dining'
+        '/images/general-1.jpg',
+        '/images/general-2.jpg',
+        '/images/general-3.jpg',
+        '/images/general-4.jpg',
+        '/images/hotel-1.jpg'
       ],
       rating: 4.0,
       reviews: 432,
@@ -82,13 +82,13 @@ export default function HotelsPage() {
       id: 4,
       name: 'Eco Lodge Netarhat',
       location: 'Netarhat',
-      image: 'https://source.unsplash.com/featured/800x600/?eco%20lodge%20India',
+      image: '/images/general-2.jpg',
       images: [
-        'https://source.unsplash.com/featured/800x600/?eco%20resort',
-        'https://source.unsplash.com/featured/800x600/?Netarhat%20view',
-        'https://source.unsplash.com/featured/800x600/?eco%20room',
-        'https://source.unsplash.com/featured/800x600/?forest%20dining',
-        'https://source.unsplash.com/featured/800x600/?bonfire%20camp'
+        '/images/general-2.jpg',
+        '/images/general-3.jpg',
+        '/images/general-4.jpg',
+        '/images/hotel-2.jpg',
+        '/images/hotel-3.jpg'
       ],
       rating: 4.3,
       reviews: 567,
@@ -101,13 +101,13 @@ export default function HotelsPage() {
       id: 5,
       name: 'Hotel Ashoka International',
       location: 'Deoghar',
-      image: 'https://source.unsplash.com/featured/800x600/?hotel%20Deoghar',
+      image: '/images/hotel-3.jpg',
       images: [
-        'https://source.unsplash.com/featured/800x600/?hotel%20building%20India',
-        'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800',
-        'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800',
-        'https://images.unsplash.com/photo-1541534401786-2077eed87a74?w=800',
-        'https://source.unsplash.com/featured/800x600/?Deoghar%20temple'
+        '/images/hotel-3.jpg',
+        '/images/hotel-4.jpg',
+        '/images/hotel-3.jpg',
+        '/images/hotel-4.jpg',
+        '/images/general-1.jpg'
       ],
       rating: 4.1,
       reviews: 743,
@@ -120,13 +120,13 @@ export default function HotelsPage() {
       id: 6,
       name: 'The Oasis Resort',
       location: 'Ranchi',
-      image: 'https://images.unsplash.com/photo-1501117716987-c8e0041a3eb1?w=800',
+      image: '/images/hotel-1.jpg',
       images: [
-        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-        'https://images.unsplash.com/photo-1519822472237-3c8b1b626c86?w=800',
-        'https://images.unsplash.com/photo-1551776235-dde6d4829808?w=800',
-        'https://images.unsplash.com/photo-1541534401786-2077eed87a74?w=800',
-        'https://images.unsplash.com/photo-1496412705862-e0088f16f791?w=800'
+        '/images/hotel-2.jpg',
+        '/images/hotel-3.jpg',
+        '/images/hotel-2.jpg',
+        '/images/hotel-4.jpg',
+        '/images/hotel-1.jpg'
       ],
       rating: 4.4,
       reviews: 321,
@@ -143,13 +143,13 @@ export default function HotelsPage() {
       id: 1,
       name: 'Kaveri Restaurant',
       location: 'Ranchi',
-      image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800',
+      image: '/images/restaurant-1.jpg',
       images: [
-        'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800',
-        'https://images.unsplash.com/photo-1604908554028-57f8f4e0f0d5?w=800',
-        'https://images.unsplash.com/photo-1604908553985-3b48e9cf9f27?w=800',
-        'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
-        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800'
+        '/images/restaurant-2.jpg',
+        '/images/restaurant-3.jpg',
+        '/images/restaurant-4.jpg',
+        '/images/restaurant-5.jpg',
+        '/images/restaurant-6.jpg'
       ],
       rating: 4.6,
       reviews: 2341,
@@ -163,13 +163,13 @@ export default function HotelsPage() {
       id: 2,
       name: 'Tribal Cuisine',
       location: 'Betla',
-      image: 'https://source.unsplash.com/featured/800x600/?tribal%20food%20India',
+      image: '/images/restaurant-2.jpg',
       images: [
-        'https://source.unsplash.com/featured/800x600/?tribal%20cuisine',
-        'https://source.unsplash.com/featured/800x600/?traditional%20cooking%20India',
-        'https://source.unsplash.com/featured/800x600/?bamboo%20shoot%20curry',
-        'https://source.unsplash.com/featured/800x600/?local%20ingredients%20India',
-        'https://source.unsplash.com/featured/800x600/?rustic%20restaurant'
+        '/images/restaurant-2.jpg',
+        '/images/restaurant-3.jpg',
+        '/images/restaurant-4.jpg',
+        '/images/restaurant-5.jpg',
+        '/images/restaurant-1.jpg'
       ],
       rating: 4.3,
       reviews: 567,
@@ -183,13 +183,13 @@ export default function HotelsPage() {
       id: 3,
       name: 'Moti Mahal Delux',
       location: 'Ranchi',
-      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
+      image: '/images/restaurant-5.jpg',
       images: [
-        'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800',
-        'https://images.unsplash.com/photo-1625944526315-4d0c03f2bb27?w=800',
-        'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800',
-        'https://images.unsplash.com/photo-1604908177073-df0b2e6900b8?w=800',
-        'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800'
+        '/images/restaurant-7.jpg',
+        '/images/restaurant-8.jpg',
+        '/images/restaurant-1.jpg',
+        '/images/restaurant-2.jpg',
+        '/images/restaurant-2.jpg'
       ],
       rating: 4.4,
       reviews: 1876,
@@ -203,13 +203,13 @@ export default function HotelsPage() {
       id: 4,
       name: 'Dhaba Junction',
       location: 'Highway (Multiple locations)',
-      image: 'https://images.unsplash.com/photo-1563245372-f21724e3856b?w=800',
+      image: '/images/restaurant-3.jpg',
       images: [
-        'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800',
-        'https://images.unsplash.com/photo-1601050690597-9fd4b29f4101?w=800',
-        'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800',
-        'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800',
-        'https://images.unsplash.com/photo-1481833761820-0509d3217039?w=800'
+        '/images/restaurant-7.jpg',
+        '/images/restaurant-4.jpg',
+        '/images/restaurant-5.jpg',
+        '/images/restaurant-6.jpg',
+        '/images/restaurant-7.jpg'
       ],
       rating: 4.2,
       reviews: 934,
@@ -223,13 +223,13 @@ export default function HotelsPage() {
       id: 5,
       name: 'Cafe Coffee Day',
       location: 'Ranchi (Multiple outlets)',
-      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800',
+      image: '/images/cafe-1.jpg',
       images: [
-        'https://images.unsplash.com/photo-1524704796725-9fc3044a58e9?w=800',
-        'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=800',
-        'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800',
-        'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800',
-        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800'
+        '/images/cafe-2.jpg',
+        '/images/cafe-1.jpg',
+        '/images/hotel-1.jpg',
+        '/images/cafe-2.jpg',
+        '/images/restaurant-6.jpg'
       ],
       rating: 4.0,
       reviews: 1234,
@@ -243,13 +243,13 @@ export default function HotelsPage() {
       id: 6,
       name: 'Pind Balluchi',
       location: 'Ranchi',
-      image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800',
+      image: '/images/restaurant-2.jpg',
       images: [
-        'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800',
-        'https://images.unsplash.com/photo-1615485737657-ecb65fbbd37f?w=800',
-        'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800',
-        'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=800',
-        'https://images.unsplash.com/photo-1481833761820-0509d3217039?w=800'
+        '/images/restaurant-7.jpg',
+        '/images/restaurant-8.jpg',
+        '/images/restaurant-1.jpg',
+        '/images/restaurant-3.jpg',
+        '/images/restaurant-7.jpg'
       ],
       rating: 4.5,
       reviews: 876,
