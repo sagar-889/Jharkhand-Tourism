@@ -1,0 +1,44 @@
+services:
+  # Web Service - Next.js Application
+  - type: web
+    name: jharkhand-tourism
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NEXTAUTH_SECRET
+        sync: false
+      - key: NEXTAUTH_URL
+        value: https://jharkhand-tourism-li3w.onrender.com
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_ACCOUNT_ID
+        sync: false
+      - key: PORT
+        value: 3000
+
+databases:
+  # PostgreSQL Database (if not already created)
+  - name: jharkhand-tourism-db
+    databaseName: jharkhandtourism
+    user: jharkhandtourism_user
+    region: frankfurt
+    plan: free
+    ipAllowList: []
