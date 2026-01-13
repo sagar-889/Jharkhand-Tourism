@@ -29,72 +29,41 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase().trim()
     console.log('Normalized email:', normalizedEmail)
 
-    // Check against stored OTP in memory (for testing)
-    let isValidOTP = false
-    
-    if (typeof global !== 'undefined') {
-      const storedData = (global as any).testOTP
-      
-      console.log('Stored OTP data:', storedData ? {
-        email: storedData.email,
-        hasOtp: !!storedData.otp,
-        expiry: new Date(storedData.expiry).toISOString()
-      } : 'No OTP stored')
-      
-      if (storedData) {
-        const isEmailMatch = storedData.email === normalizedEmail
-        const isOtpMatch = storedData.otp === otp
-        const isNotExpired = storedData.expiry > Date.now()
+    // Connect to database
+    console.log('Connecting to database...')
+    await dbConnect()
+    console.log('Database connected')
 
-        console.log('Verification check:', {
-          isEmailMatch,
-          isOtpMatch,
-          isNotExpired,
-          storedEmail: storedData.email,
-          providedEmail: normalizedEmail,
-          storedOtp: storedData.otp,
-          providedOtp: otp
-        })
+    // Find OTP in database
+    const otpRecord = await OTP.findOne({ 
+      email: normalizedEmail,
+      otp: otp 
+    })
 
-        if (isEmailMatch && isOtpMatch && isNotExpired) {
-          isValidOTP = true
-          // Clear the OTP after successful verification
-          delete (global as any).testOTP
-          console.log('OTP verified successfully')
-        } else if (!isNotExpired) {
-          console.error('OTP expired')
-          return NextResponse.json(
-            { error: 'OTP has expired. Please request a new one.' },
-            { status: 400 }
-          )
-        } else {
-          console.error('OTP mismatch')
-          return NextResponse.json(
-            { error: 'Invalid OTP. Please check and try again.' },
-            { status: 400 }
-          )
-        }
-      } else {
-        console.error('No OTP found in storage')
-        return NextResponse.json(
-          { error: 'No OTP found. Please request a new OTP.' },
-          { status: 400 }
-        )
-      }
-    }
+    console.log('OTP record found:', !!otpRecord)
 
-    if (!isValidOTP) {
-      console.error('OTP validation failed')
+    if (!otpRecord) {
+      console.error('No matching OTP found')
       return NextResponse.json(
         { error: 'Invalid OTP. Please check and try again.' },
         { status: 400 }
       )
     }
 
-    // Connect to database
-    console.log('Connecting to database...')
-    await dbConnect()
-    console.log('Database connected')
+    // Check if OTP is expired
+    if (otpRecord.expiresAt < new Date()) {
+      console.error('OTP expired')
+      await OTP.deleteOne({ _id: otpRecord._id })
+      return NextResponse.json(
+        { error: 'OTP has expired. Please request a new one.' },
+        { status: 400 }
+      )
+    }
+
+    console.log('OTP verified successfully')
+    
+    // Delete the used OTP
+    await OTP.deleteOne({ _id: otpRecord._id })
 
     if (type === 'signup') {
       // Create new user

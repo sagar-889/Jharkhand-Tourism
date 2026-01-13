@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateOTP, sendOTPEmail } from '@/lib/mailer'
+import dbConnect from '@/lib/mongodb'
+import OTP from '@/lib/models/OTP'
 
-// Simple OTP sending without database (for testing)
+// OTP sending with database storage
 export async function POST(request: NextRequest) {
-  console.log('Simple Send OTP API called')
+  console.log('Send OTP API called')
   try {
     const { email, type } = await request.json()
     console.log('Request data:', { email, type })
@@ -27,31 +29,36 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase().trim()
     console.log('Normalized email:', normalizedEmail)
 
+    // Connect to database
+    await dbConnect()
+
     // Generate OTP
     const otp = generateOTP()
     console.log('Generated OTP:', otp)
+
+    // Delete any existing OTPs for this email
+    await OTP.deleteMany({ email: normalizedEmail })
+
+    // Store OTP in database
+    await OTP.create({
+      email: normalizedEmail,
+      otp,
+      type: type || 'login',
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+    })
 
     // Try to send email
     const otpSent = await sendOTPEmail(normalizedEmail, otp)
     
     if (otpSent) {
-      // Store OTP in memory for testing (not production ready)
-      if (typeof global !== 'undefined') {
-        (global as any).testOTP = { 
-          email: normalizedEmail, 
-          otp, 
-          expiry: Date.now() + 10 * 60 * 1000 
-        }
-      }
-      
       return NextResponse.json({
         success: true,
         message: 'OTP sent to your email successfully',
         email: normalizedEmail,
-        // For testing only - remove in production
-        testOTP: otp
       })
     } else {
+      // Delete OTP if email failed to send
+      await OTP.deleteMany({ email: normalizedEmail })
       return NextResponse.json(
         { error: 'Failed to send OTP email' },
         { status: 500 }
