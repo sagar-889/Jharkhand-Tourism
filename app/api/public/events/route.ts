@@ -1,32 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dbConnect from '@/lib/mongodb'
-import Event from '@/lib/models/Event'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 // Public API to fetch events for users
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect()
-    
     const { searchParams } = new URL(request.url)
     const featured = searchParams.get('featured')
     const category = searchParams.get('category')
     const upcoming = searchParams.get('upcoming')
     
-    let query: any = { isActive: true }
-    
-    if (featured === 'true') {
-      query.featured = true
-    }
+    const where: any = { isActive: true }
     
     if (category) {
-      query.category = category
+      where.category = category
     }
     
     if (upcoming === 'true') {
-      query.startDate = { $gte: new Date() }
+      where.startDate = { gte: new Date() }
     }
     
-    const events = await Event.find(query).sort({ startDate: 1 })
+    const events = await prisma.event.findMany({
+      where,
+      orderBy: { startDate: 'asc' }
+    })
     
     return NextResponse.json({ 
       success: true,

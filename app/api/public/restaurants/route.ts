@@ -1,32 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dbConnect from '@/lib/mongodb'
-import Restaurant from '@/lib/models/Restaurant'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 // Public API to fetch restaurants for users
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect()
-    
     const { searchParams } = new URL(request.url)
-    const featured = searchParams.get('featured')
     const cuisineType = searchParams.get('cuisineType')
     const location = searchParams.get('location')
     
-    let query: any = { isActive: true }
-    
-    if (featured === 'true') {
-      query.featured = true
-    }
+    const where: any = { isActive: true }
     
     if (cuisineType) {
-      query.cuisineType = { $in: [cuisineType] }
+      where.cuisineType = { has: cuisineType }
     }
     
     if (location) {
-      query.location = { $regex: location, $options: 'i' }
+      where.address = { contains: location, mode: 'insensitive' }
     }
     
-    const restaurants = await Restaurant.find(query).sort({ createdAt: -1 })
+    const restaurants = await prisma.restaurant.findMany({
+      where,
+      orderBy: { createdAt: 'desc' }
+    })
     
     return NextResponse.json({ 
       success: true,

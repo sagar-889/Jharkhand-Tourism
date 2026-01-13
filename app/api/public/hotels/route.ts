@@ -1,32 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dbConnect from '@/lib/mongodb'
-import Hotel from '@/lib/models/Hotel'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 // Public API to fetch hotels for users
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect()
-    
     const { searchParams } = new URL(request.url)
-    const featured = searchParams.get('featured')
     const type = searchParams.get('type')
     const location = searchParams.get('location')
     
-    let query: any = { isActive: true }
-    
-    if (featured === 'true') {
-      query.featured = true
-    }
+    const where: any = { isActive: true }
     
     if (type) {
-      query.type = type
+      where.type = type
     }
     
     if (location) {
-      query.location = { $regex: location, $options: 'i' }
+      where.address = { contains: location, mode: 'insensitive' }
     }
     
-    const hotels = await Hotel.find(query).sort({ createdAt: -1 })
+    const hotels = await prisma.hotel.findMany({
+      where,
+      orderBy: { createdAt: 'desc' }
+    })
     
     return NextResponse.json({ 
       success: true,
