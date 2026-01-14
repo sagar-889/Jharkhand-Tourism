@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getImageStats } from '@/lib/image-storage'
 
+// Force dynamic rendering - don't try to build this at build time
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
     const stats = await getImageStats()

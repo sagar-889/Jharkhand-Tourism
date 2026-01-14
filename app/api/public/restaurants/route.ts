@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 // Public API to fetch restaurants for users
 export async function GET(request: NextRequest) {
   try {
